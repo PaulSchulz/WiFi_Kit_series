@@ -1158,24 +1158,22 @@ void RadioIrqProcess( void )
 
         if( ( irqRegs & IRQ_RX_DONE ) == IRQ_RX_DONE )
         {
-            if( ( irqRegs & IRQ_CRC_ERROR ) == IRQ_CRC_ERROR )
+        	//printf("rx done\r\n");
+            uint8_t size;
+            TimerStop( &RxTimeoutTimer );
+            SX126xGetPayload( RadioRxPayload, &size , 255 );
+            SX126xGetPacketStatus( &RadioPktStatus );
+            if( ( RadioEvents != NULL ) && ( RadioEvents->RxDone != NULL ) && ( irqRegs & IRQ_CRC_ERROR ) != IRQ_CRC_ERROR)
             {
-                if( ( RadioEvents != NULL ) && ( RadioEvents->RxError ) )
-                {
-                    RadioEvents->RxError( );
-                }
+                RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt );
             }
-            else
+        }
+
+        if( ( irqRegs & IRQ_CRC_ERROR ) == IRQ_CRC_ERROR )
+        {
+            if( ( RadioEvents != NULL ) && ( RadioEvents->RxError ) )
             {
-                //printf("rx done\r\n");
-                uint8_t size;
-                TimerStop( &RxTimeoutTimer );
-                SX126xGetPayload( RadioRxPayload, &size , 255 );
-                SX126xGetPacketStatus( &RadioPktStatus );
-                if( ( RadioEvents != NULL ) && ( RadioEvents->RxDone != NULL ) && ( irqRegs & IRQ_CRC_ERROR ) != IRQ_CRC_ERROR)
-                {
-                    RadioEvents->RxDone( RadioRxPayload, size, RadioPktStatus.Params.LoRa.RssiPkt, RadioPktStatus.Params.LoRa.SnrPkt );
-                }
+                RadioEvents->RxError( );
             }
         }
 

@@ -1,6 +1,6 @@
 /*
- * HelTec Automation(TM) WIFI_LoRa_32 factory test code, witch includ
- * follow functions:
+ * HelTec Automation(TM) WIFI_LoRa_32 factory test code, which includes the
+ * following functions:
  * 
  * - Basic OLED function test;
  * 
